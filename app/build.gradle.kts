@@ -1,8 +1,12 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -12,11 +16,18 @@ android {
     defaultConfig {
         applicationId = "com.example.movieexplorer"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties().apply {
+            load(rootProject.file("key.properties").reader())
+        }
+        val key: String = properties.getProperty("API_KEY") ?: ""
+        buildConfigField("String", "API_KEY", "\"$key\"")
     }
 
     buildTypes {
@@ -37,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -50,6 +62,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.animation.core.android)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -57,16 +72,37 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
+    // Jetpack Compose integration
+    implementation(libs.androidx.navigation.compose)
 
+    
     //Moshi
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
     //OkHttp
     implementation(libs.logging.interceptor)
-    // ViewModel
-    implementation(libs.androidx.lifecicle.viewmodel.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
+    //ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    //Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Hilt
+    implementation(libs.hilt.android.v2511)
+    kapt(libs.hilt.android.compiler.v2511)
+
+
+}
+kapt {
+    correctErrorTypes = true
 }
