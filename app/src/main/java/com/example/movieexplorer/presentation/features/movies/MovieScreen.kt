@@ -1,16 +1,15 @@
 package com.example.movieexplorer.presentation.features.movies
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -26,19 +25,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.example.movieexplorer.domain.model.Movie
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,57 +48,58 @@ fun MovieScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Movie Explorer",
-                        modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    // Botón de navegación a favoritos
-                    IconButton(onClick = { onNavigateToFavorites() }) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = "Go to Favorites"
-                        )
-                    }
-                }
-            )
-        }
+
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
+            // Botón de favoritos en su propia fila
+            Button(
+                onClick = { onNavigateToFavorites() },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 1.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(
+                        text = "Ver Favoritos",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+
             SearchBar(
                 query = viewModel.searchQuery.text,
                 onQueryChange = { viewModel.searchMovies(TextFieldValue(it)) },
                 onSearch = { },
                 active = false,
                 onActiveChange = { },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                .padding(bottom=8.dp),
                 placeholder = { Text("Search movies...") },
                 content = { }
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             when {
                 uiState.isLoading -> {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
-
                 uiState.error != null -> {
                     Text(
                         "Error type ${uiState.error}",
@@ -108,7 +107,6 @@ fun MovieScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-
                 uiState.movies.isEmpty() -> {
                     Text(
                         text = "No movies found",
@@ -119,23 +117,21 @@ fun MovieScreen(
                         textAlign = TextAlign.Center
                     )
                 }
-
                 else -> {
-                    MovieList(uiState.movies,
+                    MovieList(
+                        uiState.movies,
                         favoriteMovies = uiState.favoriteMovies,
                         onFavoriteClick = viewModel::toggleFavorite,
                         onMovieClick = onNavigateToDetail
                     )
-
                 }
             }
+
             Button(onClick = { viewModel.loadMovies() }) {
                 Text("Load")
             }
         }
     }
-
-
 }
 
 @Composable
@@ -145,10 +141,6 @@ fun MovieList(
     onFavoriteClick: (Int) -> Unit,
     onMovieClick: (Int) -> Unit
 ) {
-    Text(
-        text = "Favorites count: ${favoriteMovies.size}, IDs: ${favoriteMovies.joinToString()}",
-        style = MaterialTheme.typography.bodyLarge
-    )
     LazyColumn {
         items(movies) { movie ->
             MovieItem(
@@ -162,7 +154,9 @@ fun MovieList(
 }
 
 @Composable
-fun MovieItem(movie: Movie, favoriteMovies: Set<Int>,onFavoriteClick: (Int) -> Unit = {},
+fun MovieItem(movie: Movie,
+              favoriteMovies: Set<Int>,
+              onFavoriteClick: (Int) -> Unit = {},
               onMovieClick: (Int) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),

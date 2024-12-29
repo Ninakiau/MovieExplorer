@@ -46,8 +46,4 @@ class MovieMapper {
             voteCount = domain.voteCount,
             posterUrl = domain.posterUrl
         )
-    fun toEntityList(domains: List<Movie>): List<MovieEntity> {
-        return domains.map { toEntity(it) }
-
-    }
 }

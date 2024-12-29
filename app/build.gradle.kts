@@ -101,6 +101,11 @@ dependencies {
     implementation(libs.hilt.android.v2511)
     kapt(libs.hilt.android.compiler.v2511)
 
+    implementation (libs.androidx.material.icons.core)
+    implementation (libs.androidx.material.icons.extended)
+
+    testImplementation (libs.junit)
+    testImplementation (libs.mockk.v1135)
 
 }
 kapt {

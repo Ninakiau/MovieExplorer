@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.movieexplorer.presentation.features.details.MovieDetailScreen
-import com.example.movieexplorer.presentation.features.movies.FavoriteMoviesScreen
+import com.example.movieexplorer.presentation.features.favorite.FavoriteMoviesScreen
 import com.example.movieexplorer.presentation.features.movies.MovieScreen
 
 import com.example.movieexplorer.presentation.features.movies.MovieViewModel
@@ -47,7 +47,7 @@ fun MovieNavigation(
             route = Screen.MovieDetail.route,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getString("movieId")
+            val movieId = backStackEntry.arguments?.getInt("movieId") ?: return@composable
             MovieDetailScreen(
                 movieId = movieId,
                 viewModel = viewModel,

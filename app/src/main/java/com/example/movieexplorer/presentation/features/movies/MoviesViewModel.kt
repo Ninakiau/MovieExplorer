@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieexplorer.data.local.entities.MovieEntity
 import com.example.movieexplorer.domain.model.Movie
+import com.example.movieexplorer.domain.model.ThemeState
 import com.example.movieexplorer.domain.repository.MovieRepository
 import com.example.movieexplorer.domain.usecase.GetPopularMoviesUseCase
 import com.example.movieexplorer.domain.usecase.SearchMoviesUseCase
@@ -35,6 +36,8 @@ class MovieViewModel @Inject constructor(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
 
+    private val _themeState = MutableStateFlow(ThemeState())
+    val themeState = _themeState.asStateFlow()
 
 
     private val _uiState = MutableStateFlow(MovieUIState())
@@ -73,7 +76,9 @@ class MovieViewModel @Inject constructor(
             }
         }
     }
-
+    fun toggleTheme() {
+        _themeState.update { it.copy(isDarkMode = !it.isDarkMode) }
+    }
 
 
     fun loadMovies() {

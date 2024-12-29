@@ -63,7 +63,6 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getFavoriteMovies(): Flow<List<MovieEntity>> {
         return movieDao.getFavoriteMovies()
             .catch { error ->
-                Log.e("MovieRepository", "Error getting favorites: ${error.message}")
                 throw error
             }
             .flowOn(Dispatchers.IO)
@@ -78,26 +77,19 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun toggleFavorite(movieId: Int) {
         val exists = movieDao.movieExists(movieId)
         val isFavorite = if (exists) movieDao.isFavorite(movieId).first() else false
-        Log.d("ToggleFavorite", "movieExists($movieId) = $exists")
 
         if (isFavorite) {
             // Si es favorito, lo eliminamos
             val response = api.getMovieDetails(movieId)
-            Log.d("MovieDetails", "Response from API: $response")
             val domainMovie = movieMapper.toDomain(response)
-            Log.d("MovieMapper", "Domain movie mapped: $domainMovie")
             val movieEntity = movieMapper.toEntity(domainMovie)
-            Log.d("MovieMapper", "Entity movie mapped: $movieEntity")
             movieDao.removeFavorite(movieEntity)
         } else {
             // Si no es favorito o no existe, lo agregamos
             try {
                 val response = api.getMovieDetails(movieId)
-                Log.d("MovieDetails", "Response from API: $response")
                 val domainMovie = movieMapper.toDomain(response)
-                Log.d("MovieMapper", "Domain movie mapped: $domainMovie")
                 val movieEntity = movieMapper.toEntity(domainMovie)
-                Log.d("MovieMapper", "Entity movie mapped: $movieEntity")
                 movieDao.addFavorite(movieEntity)
                 movieDao.toggleFavorite(movieId)
             } catch (e: Exception) {
@@ -109,7 +101,6 @@ class MovieRepositoryImpl @Inject constructor(
         }
         // Recuperar favoritos después de cada operación
         val updatedMovies = getFavoriteMovies().first()
-        Log.d("UpdatedFavoriteMovies", "Favoritos después de operación: $updatedMovies")
     }
 
 

@@ -1,4 +1,4 @@
-package com.example.movieexplorer.presentation.features.movies
+package com.example.movieexplorer.presentation.features.favorite
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.movieexplorer.presentation.features.movies.MovieList
+import com.example.movieexplorer.presentation.features.movies.MovieViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
